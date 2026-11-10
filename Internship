@@ -1,0 +1,742 @@
+```html
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thai Teaching Assistant in Vietnam Workspace</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts - Kanit & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Kanit', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        vnred: '#da251d',
+                        vnyellow: '#ff0',
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#0f4c81',
+                            900: '#0c2a4a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #f8fafc;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="text-slate-700 min-h-screen flex flex-col md:flex-row bg-slate-50">
+
+    <!-- Sidebar Navigation -->
+    <aside class="w-full md:w-72 bg-slate-900 text-white flex-shrink-0 flex flex-col justify-between shadow-xl">
+        <div>
+            <!-- Header Brand -->
+            <div class="p-5 border-b border-slate-800 flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-red-600 via-red-500 to-amber-500 flex items-center justify-center text-white text-xl shadow-lg relative">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                    <span class="absolute -top-1 -right-1 flex h-3 w-3">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-3 w-3 bg-yellow-400"></span>
+                    </span>
+                </div>
+                <div>
+                    <h1 class="font-bold text-base leading-tight tracking-wide text-slate-100">Thai TA in Vietnam</h1>
+                    <p class="text-xs text-amber-400 font-medium">🇻🇳 ระบบผู้ช่วยสอนภาษาไทย</p>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="p-4 space-y-1.5">
+                <button onclick="switchTab('students')" id="tab-btn-students" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium text-left">
+                    <i class="fa-solid fa-user-graduate text-emerald-400 text-lg w-6 text-center"></i>
+                    <span>นักเรียน & ความคืบหน้า</span>
+                    <span id="badge-students" class="ml-auto bg-emerald-500/20 text-emerald-300 text-xs px-2 py-0.5 rounded-full border border-emerald-500/30">0</span>
+                </button>
+
+                <button onclick="switchTab('teachers')" id="tab-btn-teachers" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium text-left">
+                    <i class="fa-solid fa-user-tie text-purple-400 text-lg w-6 text-center"></i>
+                    <span>อาจารย์ & บุคลากร</span>
+                    <span id="badge-teachers" class="ml-auto bg-purple-500/20 text-purple-300 text-xs px-2 py-0.5 rounded-full border border-purple-500/30">0</span>
+                </button>
+
+                <button onclick="switchTab('tasks')" id="tab-btn-tasks" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium text-left">
+                    <i class="fa-solid fa-list-check text-sky-400 text-lg w-6 text-center"></i>
+                    <span>ภารกิจผู้ช่วยสอน</span>
+                    <span id="badge-tasks" class="ml-auto bg-sky-500/20 text-sky-300 text-xs px-2 py-0.5 rounded-full border border-sky-500/30">0</span>
+                </button>
+
+                <button onclick="switchTab('journal')" id="tab-btn-journal" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium text-left">
+                    <i class="fa-solid fa-book-bookmark text-amber-400 text-lg w-6 text-center"></i>
+                    <span>ไดอารี่ & คำศัพท์เวียดนาม</span>
+                    <span id="badge-journal" class="ml-auto bg-amber-500/20 text-amber-300 text-xs px-2 py-0.5 rounded-full border border-amber-500/30">0</span>
+                </button>
+            </nav>
+        </div>
+
+        <div class="p-4 border-t border-slate-800 text-xs text-slate-400 text-center">
+            <p class="flex items-center justify-center gap-1.5"><i class="fa-solid fa-shield-halved text-emerald-400"></i> LocalStorage Auto Saved</p>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen overflow-y-auto">
+        <!-- Top Navbar -->
+        <header class="bg-white border-b border-slate-200 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sticky top-0 z-10 shadow-sm">
+            <div>
+                <h2 id="page-title" class="text-xl font-bold text-slate-800 flex items-center gap-2"></h2>
+                <p id="page-subtitle" class="text-xs text-slate-500 mt-0.5"></p>
+            </div>
+            
+            <button id="action-add-btn" onclick="openModal()" class="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-medium px-4 py-2.5 rounded-xl shadow-sm hover:shadow transition-all text-sm">
+                <i class="fa-solid fa-plus"></i>
+                <span id="action-add-btn-text">เพิ่มข้อมูล</span>
+            </button>
+        </header>
+
+        <!-- Body Content -->
+        <div class="p-4 sm:p-6 lg:p-8 flex-1">
+            
+            <!-- SECTION 1: STUDENTS -->
+            <section id="section-students" class="space-y-6 hidden">
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="relative w-full sm:w-80">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="student-search-input" oninput="renderStudents()" placeholder="ค้นหานักเรียน (ชื่อไทย, ชื่อเวียดนาม, ห้อง)..." class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                    </div>
+                    <div class="text-xs font-medium text-slate-500">
+                        รวมทั้งหมด: <strong id="student-total-count" class="text-emerald-600 font-bold">0</strong> คน
+                    </div>
+                </div>
+
+                <div id="students-list-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                <div id="students-empty-state" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300">
+                    <i class="fa-solid fa-user-graduate text-slate-300 text-4xl mb-3"></i>
+                    <h3 class="text-slate-700 font-semibold">ยังไม่มีข้อมูลนักเรียน</h3>
+                    <p class="text-slate-400 text-sm mt-1 mb-4">คลิกปุ่มเพิ่มข้อมูลนักเรียนเพื่อเริ่มบันทึก</p>
+                </div>
+            </section>
+
+            <!-- SECTION 2: TEACHERS -->
+            <section id="section-teachers" class="space-y-6 hidden">
+                <div id="teachers-list-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                <div id="teachers-empty-state" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300">
+                    <i class="fa-solid fa-user-tie text-slate-300 text-4xl mb-3"></i>
+                    <h3 class="text-slate-700 font-semibold">ยังไม่มีข้อมูลอาจารย์</h3>
+                    <p class="text-slate-400 text-sm mt-1">บันทึกข้อมูลอาจารย์พี่เลี้ยง หรืออาจารย์ชาวเวียดนามได้ที่นี่</p>
+                </div>
+            </section>
+
+            <!-- SECTION 3: TASKS -->
+            <section id="section-tasks" class="space-y-6 hidden">
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl w-full md:w-auto overflow-x-auto">
+                        <button onclick="setTaskFilter('all')" id="filter-task-all" class="px-3 py-1.5 rounded-lg text-xs font-medium">ทั้งหมด</button>
+                        <button onclick="setTaskFilter('todo')" id="filter-task-todo" class="px-3 py-1.5 rounded-lg text-xs font-medium">ยังไม่ได้ทำ</button>
+                        <button onclick="setTaskFilter('doing')" id="filter-task-doing" class="px-3 py-1.5 rounded-lg text-xs font-medium">กำลังทำ</button>
+                        <button onclick="setTaskFilter('done')" id="filter-task-done" class="px-3 py-1.5 rounded-lg text-xs font-medium">เสร็จแล้ว</button>
+                    </div>
+                </div>
+                <div id="tasks-list-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                <div id="tasks-empty-state" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300">
+                    <i class="fa-solid fa-list-check text-slate-300 text-4xl mb-3"></i>
+                    <h3 class="text-slate-700 font-semibold">ไม่มีภารกิจผู้ช่วยสอน</h3>
+                </div>
+            </section>
+
+            <!-- SECTION 4: JOURNAL -->
+            <section id="section-journal" class="space-y-6 hidden">
+                <div id="journal-list-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                <div id="journal-empty-state" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300">
+                    <i class="fa-solid fa-book-bookmark text-slate-300 text-4xl mb-3"></i>
+                    <h3 class="text-slate-700 font-semibold">ยังไม่มีบันทึกไดอารี่/คำศัพท์</h3>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- UNIVERSAL DYNAMIC MODAL -->
+    <div id="item-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                <h3 id="modal-title" class="font-bold text-slate-800 text-base"></h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-200 transition-all">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="modal-form" onsubmit="handleFormSubmit(event)" class="p-6 overflow-y-auto space-y-4">
+                <input type="hidden" id="form-id">
+                
+                <!-- Dynamic Fields Injection -->
+                <div id="modal-dynamic-fields" class="space-y-4"></div>
+
+                <div class="pt-3 flex justify-end gap-3 border-t border-slate-100">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-100 transition-all">ยกเลิก</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium shadow-sm transition-all">บันทึกข้อมูล</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        let currentTab = 'students';
+        let currentTaskFilter = 'all';
+
+        // Initial Data Structures
+        let students = JSON.parse(localStorage.getItem('vn_ta_students')) || [
+            { id: 's1', thaiName: 'สมชาย ใจดี', vnName: 'Nguyễn Văn A (เหวียน วาน เอ)', classGroup: 'ภาษาไทย 101 - ห้อง A', speakingSkill: 3, listeningSkill: 4, readingSkill: 3, writingSkill: 2, strengths: 'จำคำศัพท์เก่ง ออกเสียง ร/ล ชัดเจน', improvements: 'ผันวรรณยุกต์เสียงเอก-โท ยังสับสน', createdAt: new Date().toISOString() }
+        ];
+
+        let teachers = JSON.parse(localStorage.getItem('vn_ta_teachers')) || [
+            { id: 't1', name: 'Cô Linh (อาจารย์ ลินห์)', role: 'อาจารย์พี่เลี้ยงประจำภาควิชา', subjects: 'ไวยากรณ์ไทยขั้นสูง', contact: 'Zalo: 0912345678 / Email: linh@univ.edu.vn', notes: 'อาจารย์เน้นย้ำเรื่องการตรวจการบ้านเรื่องการเขียนเรียงความส่งทุกวันศุกร์', createdAt: new Date().toISOString() }
+        ];
+
+        let tasks = JSON.parse(localStorage.getItem('vn_ta_tasks')) || [
+            { id: 'tk1', title: 'เตรียมใบงานบทที่ 3 (วรรณยุกต์ไทย)', desc: 'พิมพ์ชีทคำศัพท์พร้อมคำแปลภาษาเวียดนาม 30 ชุด', dueDate: '2026-11-25', priority: 'High', status: 'doing', createdAt: new Date().toISOString() }
+        ];
+
+        let journal = JSON.parse(localStorage.getItem('vn_ta_journal')) || [
+            { id: 'j1', title: 'คำศัพท์เวียดนามใช้บ่อยในห้องเรียน', category: 'คำศัพท์', content: 'Cảm ơn = ขอบคุณ\nXin chào = สวัสดี\nHiểu không? = เข้าใจไหม?\nBắt đầu = เริ่มต้น', createdAt: new Date().toISOString() }
+        ];
+
+        window.onload = function() {
+            switchTab('students');
+            saveData();
+        };
+
+        function saveData() {
+            localStorage.setItem('vn_ta_students', JSON.stringify(students));
+            localStorage.setItem('vn_ta_teachers', JSON.stringify(teachers));
+            localStorage.setItem('vn_ta_tasks', JSON.stringify(tasks));
+            localStorage.setItem('vn_ta_journal', JSON.stringify(journal));
+            updateBadges();
+        }
+
+        function updateBadges() {
+            document.getElementById('badge-students').textContent = students.length;
+            document.getElementById('badge-teachers').textContent = teachers.length;
+            document.getElementById('badge-tasks').textContent = tasks.filter(t => t.status !== 'done').length;
+            document.getElementById('badge-journal').textContent = journal.length;
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            const titleEl = document.getElementById('page-title');
+            const subtitleEl = document.getElementById('page-subtitle');
+            const addBtnText = document.getElementById('action-add-btn-text');
+
+            ['students', 'teachers', 'tasks', 'journal'].forEach(t => {
+                const sec = document.getElementById(`section-${t}`);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (t === tab) {
+                    sec.classList.remove('hidden');
+                    btn.className = 'w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-800 text-white font-medium text-left shadow-sm';
+                } else {
+                    sec.classList.add('hidden');
+                    btn.className = 'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 transition-all font-medium text-left';
+                }
+            });
+
+            if (tab === 'students') {
+                titleEl.innerHTML = '<i class="fa-solid fa-user-graduate text-emerald-600"></i> ข้อมูลนักเรียน & ประเมินทักษะ';
+                subtitleEl.textContent = 'บันทึกรายชื่อนักเรียน ระดับคลาสเรียน และพัฒนาการเรียนภาษาไทย';
+                addBtnText.textContent = 'เพิ่มนักเรียนใหม่';
+                renderStudents();
+            } else if (tab === 'teachers') {
+                titleEl.innerHTML = '<i class="fa-solid fa-user-tie text-purple-600"></i> ข้อมูลอาจารย์ & บุคลากร';
+                subtitleEl.textContent = 'บันทึกช่องทางติดต่ออาจารย์พี่เลี้ยง และคำแนะนำ/ข้อสั่งการ';
+                addBtnText.textContent = 'เพิ่มอาจารย์';
+                renderTeachers();
+            } else if (tab === 'tasks') {
+                titleEl.innerHTML = '<i class="fa-solid fa-list-check text-sky-600"></i> ภารกิจ & งานผู้ช่วยสอน';
+                subtitleEl.textContent = 'ติดตามงานเตรียมชีท ตรวจการบ้าน คุมสอบ และภารกิจประจำวัน';
+                addBtnText.textContent = 'เพิ่มภารกิจงาน';
+                renderTasks();
+            } else if (tab === 'journal') {
+                titleEl.innerHTML = '<i class="fa-solid fa-book-bookmark text-amber-600"></i> ไดอารี่ & คลังศัพท์เวียดนาม';
+                subtitleEl.textContent = 'บันทึกเรื่องราวการฝึกงาน เกร็ดวัฒนธรรม และคำศัพท์เวียดนาม';
+                addBtnText.textContent = 'เพิ่มบันทึกใหม่';
+                renderJournal();
+            }
+        }
+
+        // --- STUDENTS RENDER --- //
+        function renderStudents() {
+            const container = document.getElementById('students-list-container');
+            const empty = document.getElementById('students-empty-state');
+            const keyword = document.getElementById('student-search-input').value.toLowerCase();
+            container.innerHTML = '';
+
+            const filtered = students.filter(s => 
+                s.thaiName.toLowerCase().includes(keyword) || 
+                s.vnName.toLowerCase().includes(keyword) || 
+                (s.classGroup && s.classGroup.toLowerCase().includes(keyword))
+            );
+
+            document.getElementById('student-total-count').textContent = filtered.length;
+
+            if (filtered.length === 0) { empty.classList.remove('hidden'); return; }
+            empty.classList.add('hidden');
+
+            filtered.forEach(s => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between';
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-base">${escapeHtml(s.thaiName)}</h4>
+                                <p class="text-xs text-emerald-600 font-medium"><i class="fa-solid fa-language mr-1"></i>${escapeHtml(s.vnName || '-')}</p>
+                            </div>
+                            <div class="flex gap-1">
+                                <button onclick="openModal('${s.id}')" class="text-slate-400 hover:text-sky-600 p-1.5 rounded-lg hover:bg-slate-100"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button onclick="deleteStudent('${s.id}')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg hover:bg-slate-100"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="my-3 inline-block px-2.5 py-1 bg-slate-100 text-slate-600 text-xs rounded-lg font-medium">
+                            <i class="fa-solid fa-chalkboard mr-1"></i>${escapeHtml(s.classGroup || 'ไม่ระบุห้อง')}
+                        </div>
+
+                        <!-- Skill Ratings -->
+                        <div class="space-y-1.5 my-3 bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs">
+                            <div class="flex justify-between items-center"><span>ฟัง (Listening):</span> ${renderStars(s.listeningSkill)}</div>
+                            <div class="flex justify-between items-center"><span>พูด (Speaking):</span> ${renderStars(s.speakingSkill)}</div>
+                            <div class="flex justify-between items-center"><span>อ่าน (Reading):</span> ${renderStars(s.readingSkill)}</div>
+                            <div class="flex justify-between items-center"><span>เขียน (Writing):</span> ${renderStars(s.writingSkill)}</div>
+                        </div>
+
+                        ${s.strengths ? `<p class="text-xs text-slate-600 mb-1"><strong>จุดเด่น:</strong> ${escapeHtml(s.strengths)}</p>` : ''}
+                        ${s.improvements ? `<p class="text-xs text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-100"><strong>ควรปรับปรุง:</strong> ${escapeHtml(s.improvements)}</p>` : ''}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function deleteStudent(id) {
+            students = students.filter(s => s.id !== id);
+            saveData();
+            renderStudents();
+        }
+
+        // --- TEACHERS RENDER --- //
+        function renderTeachers() {
+            const container = document.getElementById('teachers-list-container');
+            const empty = document.getElementById('teachers-empty-state');
+            container.innerHTML = '';
+
+            if (teachers.length === 0) { empty.classList.remove('hidden'); return; }
+            empty.classList.add('hidden');
+
+            teachers.forEach(t => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between';
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-base">${escapeHtml(t.name)}</h4>
+                                <span class="text-xs text-purple-600 font-medium px-2 py-0.5 bg-purple-50 rounded-md border border-purple-100">${escapeHtml(t.role || 'อาจารย์')}</span>
+                            </div>
+                            <div class="flex gap-1">
+                                <button onclick="openModal('${t.id}')" class="text-slate-400 hover:text-purple-600 p-1.5 rounded-lg hover:bg-slate-100"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button onclick="deleteTeacher('${t.id}')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg hover:bg-slate-100"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </div>
+
+                        ${t.subjects ? `<p class="text-xs text-slate-500 mt-2"><i class="fa-solid fa-book-open mr-1"></i>วิชา: ${escapeHtml(t.subjects)}</p>` : ''}
+                        ${t.contact ? `<p class="text-xs text-slate-600 mt-1.5 bg-slate-50 p-2 rounded-lg"><i class="fa-solid fa-address-book mr-1 text-slate-400"></i>${escapeHtml(t.contact)}</p>` : ''}
+                        ${t.notes ? `<div class="mt-3 p-3 bg-amber-50/60 border border-amber-200/60 rounded-xl text-xs text-slate-700"><strong><i class="fa-solid fa-thumbtack text-amber-500 mr-1"></i>โน้ตสั่งการ/คำแนะนำ:</strong><p class="mt-1 leading-relaxed">${escapeHtml(t.notes)}</p></div>` : ''}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function deleteTeacher(id) {
+            teachers = teachers.filter(t => t.id !== id);
+            saveData();
+            renderTeachers();
+        }
+
+        // --- TASKS RENDER --- //
+        function setTaskFilter(filter) {
+            currentTaskFilter = filter;
+            ['all', 'todo', 'doing', 'done'].forEach(f => {
+                const btn = document.getElementById(`filter-task-${f}`);
+                btn.className = f === filter 
+                    ? 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-sky-700 shadow-sm border border-slate-200' 
+                    : 'px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600';
+            });
+            renderTasks();
+        }
+
+        function renderTasks() {
+            const container = document.getElementById('tasks-list-container');
+            const empty = document.getElementById('tasks-empty-state');
+            container.innerHTML = '';
+
+            const filtered = tasks.filter(t => currentTaskFilter === 'all' || t.status === currentTaskFilter);
+
+            if (filtered.length === 0) { empty.classList.remove('hidden'); return; }
+            empty.classList.add('hidden');
+
+            filtered.forEach(t => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between';
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            ${getPriorityBadge(t.priority)}
+                            <div class="flex gap-1">
+                                <button onclick="openModal('${t.id}')" class="text-slate-400 hover:text-sky-600 p-1 rounded-lg hover:bg-slate-100"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button onclick="deleteTask('${t.id}')" class="text-slate-400 hover:text-red-600 p-1 rounded-lg hover:bg-slate-100"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </div>
+                        <h4 class="font-semibold text-slate-800 text-base ${t.status === 'done' ? 'line-through text-slate-400' : ''}">${escapeHtml(t.title)}</h4>
+                        <p class="text-slate-500 text-xs mt-1 leading-relaxed">${escapeHtml(t.desc || '-')}</p>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between mt-4">
+                        <span class="text-xs text-slate-400"><i class="fa-regular fa-calendar mr-1"></i>${t.dueDate || 'ไม่ระบุวัน'}</span>
+                        <select onchange="updateTaskStatus('${t.id}', this.value)" class="text-xs font-medium border rounded-lg px-2 py-1 bg-slate-50">
+                            <option value="todo" ${t.status === 'todo' ? 'selected' : ''}>ยังไม่ได้ทำ</option>
+                            <option value="doing" ${t.status === 'doing' ? 'selected' : ''}>กำลังทำ</option>
+                            <option value="done" ${t.status === 'done' ? 'selected' : ''}>เสร็จแล้ว</option>
+                        </select>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function updateTaskStatus(id, status) {
+            const task = tasks.find(t => t.id === id);
+            if (task) { task.status = status; saveData(); renderTasks(); }
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            saveData();
+            renderTasks();
+        }
+
+        // --- JOURNAL RENDER --- //
+        function renderJournal() {
+            const container = document.getElementById('journal-list-container');
+            const empty = document.getElementById('journal-empty-state');
+            container.innerHTML = '';
+
+            if (journal.length === 0) { empty.classList.remove('hidden'); return; }
+            empty.classList.add('hidden');
+
+            journal.forEach(j => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between';
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-100">${escapeHtml(j.category || 'บันทึก')}</span>
+                            <div class="flex gap-1">
+                                <button onclick="openModal('${j.id}')" class="text-slate-400 hover:text-amber-600 p-1 rounded-lg hover:bg-slate-100"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button onclick="deleteJournal('${j.id}')" class="text-slate-400 hover:text-red-600 p-1 rounded-lg hover:bg-slate-100"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-base mb-2">${escapeHtml(j.title)}</h4>
+                        <p class="text-slate-600 text-xs whitespace-pre-line leading-relaxed">${escapeHtml(j.content)}</p>
+                    </div>
+                    <div class="pt-3 border-t border-slate-100 mt-4 text-[11px] text-slate-400">
+                        ${formatDate(j.createdAt)}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function deleteJournal(id) {
+            journal = journal.filter(j => j.id !== id);
+            saveData();
+            renderJournal();
+        }
+
+        // --- UNIVERSAL MODAL SYSTEM --- //
+        function openModal(editId = null) {
+            const modal = document.getElementById('item-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const fieldsContainer = document.getElementById('modal-dynamic-fields');
+            document.getElementById('form-id').value = editId || '';
+
+            fieldsContainer.innerHTML = '';
+
+            if (currentTab === 'students') {
+                const item = editId ? students.find(s => s.id === editId) : {};
+                modalTitle.textContent = editId ? 'แก้ไขข้อมูลนักเรียน' : 'เพิ่มนักเรียนใหม่';
+                fieldsContainer.innerHTML = `
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">ชื่อ-นามสกุล (ภาษาไทย/ชื่อเล่น) *</label>
+                        <input type="text" id="field-thaiName" required value="${item.thaiName || ''}" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="เช่น นายสมชาย (ชายน้อย)">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">ชื่อภาษาเวียดนาม (ถ้ามี)</label>
+                        <input type="text" id="field-vnName" value="${item.vnName || ''}" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="เช่น Nguyễn Văn A">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">ชั้นเรียน / ห้องเรียน</label>
+                        <input type="text" id="field-classGroup" value="${item.classGroup || ''}" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="เช่น ภาษาไทย 101 - ห้อง B">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">ฟัง (Listening)</label>
+                            <select id="field-listeningSkill" class="w-full px-2 py-1.5 border rounded-lg text-xs">
+                                ${[1,2,3,4,5].map(n => `<option value="${n}" ${item.listeningSkill == n ? 'selected':''}>${n} ดาว</option>`).join('')}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">พูด (Speaking)</label>
+                            <select id="field-speakingSkill" class="w-full px-2 py-1.5 border rounded-lg text-xs">
+                                ${[1,2,3,4,5].map(n => `<option value="${n}" ${item.speakingSkill == n ? 'selected':''}>${n} ดาว</option>`).join('')}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">อ่าน (Reading)</label>
+                            <select id="field-readingSkill" class="w-full px-2 py-1.5 border rounded-lg text-xs">
+                                ${[1,2,3,4,5].map(n => `<option value="${n}" ${item.readingSkill == n ? 'selected':''}>${n} ดาว</option>`).join('')}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">เขียน (Writing)</label>
+                            <select id="field-writingSkill" class="w-full px-2 py-1.5 border rounded-lg text-xs">
+                                ${[1,2,3,4,5].map(n => `<option value="${n}" ${item.writingSkill == n ? 'selected':''}>${n} ดาว</option>`).join('')}
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">จุดเด่น</label>
+                        <input type="text" id="field-strengths" value="${item.strengths || ''}" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="ข้อดีในการเรียน...">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">ข้อควรปรับปรุง</label>
+                        <input type="text" id="field-improvements" value="${item.improvements || ''}" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="สิ่งที่ยังต้องฝึกซ้ำ...">
+                    </div>
+                `;
+            } else if (currentTab === 'teachers') {
+                const item = editId ? teachers.find(t => t.id === editId) : {};
+                modalTitle.textContent = editId ? 'แก้ไขข้อมูลอาจารย์' : 'เพิ่มข้อมูลอาจารย์ใหม่';
+                fieldsContainer.innerHTML = `
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">ชื่ออาจารย์ *</label>
+                        <input type="text" id="field-name" required value="${item.name || ''}" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="เช่น Cô Linh">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">บทบาท / ตำแหน่ง</label>
+                        <input type="text" id="field-role" value="${item.role || ''}" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="เช่น อาจารย์พี่เลี้ยง / หัวหน้าภาควิชา">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">วิชาที่รับผิดชอบ</label>
+                        <input type="text" id="field-subjects" value="${item.subjects || ''}" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="เช่น การฟัง-พูดภาษาไทย 2">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">ข้อมูลติดต่อ (Zalo / เบอร์โทร / Email)</label>
+                        <input type="text" id="field-contact" value="${item.contact || ''}" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Zalo: ... / Email: ...">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">ข้อสั่งการ / คำแนะนำสำคัญจากอาจารย์</label>
+                        <textarea id="field-notes" rows="3" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="โน้ตงานหรือคำสั่งที่อาจารย์ฝากไว้...">${item.notes || ''}</textarea>
+                    </div>
+                `;
+            } else if (currentTab === 'tasks') {
+                const item = editId ? tasks.find(t => t.id === editId) : {};
+                modalTitle.textContent = editId ? 'แก้ไขภารกิจ' : 'เพิ่มภารกิจใหม่';
+                fieldsContainer.innerHTML = `
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">ชื่องาน / ภารกิจ *</label>
+                        <input type="text" id="field-title" required value="${item.title || ''}" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="เช่น ตรวจการบ้านบทที่ 2">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">รายละเอียด</label>
+                        <textarea id="field-desc" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="รายละเอียดงานเพิ่มเติม...">${item.desc || ''}</textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">กำหนดส่ง</label>
+                            <input type="date" id="field-dueDate" value="${item.dueDate || ''}" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">ความสำคัญ</label>
+                            <select id="field-priority" class="w-full px-3 py-2 border rounded-xl text-sm">
+                                <option value="Low" ${item.priority === 'Low' ? 'selected':''}>ต่ำ</option>
+                                <option value="Medium" ${item.priority === 'Medium' || !item.priority ? 'selected':''}>ปานกลาง</option>
+                                <option value="High" ${item.priority === 'High' ? 'selected':''}>สูง</option>
+                            </select>
+                        </div>
+                    </div>
+                `;
+            } else if (currentTab === 'journal') {
+                const item = editId ? journal.find(j => j.id === editId) : {};
+                modalTitle.textContent = editId ? 'แก้ไขบันทึก' : 'เพิ่มบันทึกใหม่';
+                fieldsContainer.innerHTML = `
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">หมวดหมู่</label>
+                        <select id="field-category" class="w-full px-3 py-2 border rounded-xl text-sm">
+                            <option value="คำศัพท์" ${item.category === 'คำศัพท์' ? 'selected':''}>คำศัพท์ภาษาเวียดนาม</option>
+                            <option value="วัฒนธรรม" ${item.category === 'วัฒนธรรม' ? 'selected':''}>เกร็ดวัฒนธรรม/การใช้ชีวิต</option>
+                            <option value="ประสบการณ์" ${item.category === 'ประสบการณ์' || !item.category ? 'selected':''}>บันทึกประจำวัน/ประสบการณ์</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">หัวข้อ *</label>
+                        <input type="text" id="field-title" required value="${item.title || ''}" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="ระบุหัวข้อ...">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">เนื้อหา / บันทึก *</label>
+                        <textarea id="field-content" required rows="5" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="พิมพ์ข้อความบันทึก...">${item.content || ''}</textarea>
+                    </div>
+                `;
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('item-modal').classList.add('hidden');
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('form-id').value;
+
+            if (currentTab === 'students') {
+                const data = {
+                    id: id || 's_' + Date.now(),
+                    thaiName: document.getElementById('field-thaiName').value,
+                    vnName: document.getElementById('field-vnName').value,
+                    classGroup: document.getElementById('field-classGroup').value,
+                    listeningSkill: parseInt(document.getElementById('field-listeningSkill').value),
+                    speakingSkill: parseInt(document.getElementById('field-speakingSkill').value),
+                    readingSkill: parseInt(document.getElementById('field-readingSkill').value),
+                    writingSkill: parseInt(document.getElementById('field-writingSkill').value),
+                    strengths: document.getElementById('field-strengths').value,
+                    improvements: document.getElementById('field-improvements').value,
+                    createdAt: new Date().toISOString()
+                };
+
+                if (id) {
+                    const idx = students.findIndex(s => s.id === id);
+                    if (idx !== -1) students[idx] = data;
+                } else {
+                    students.unshift(data);
+                }
+                renderStudents();
+            } else if (currentTab === 'teachers') {
+                const data = {
+                    id: id || 't_' + Date.now(),
+                    name: document.getElementById('field-name').value,
+                    role: document.getElementById('field-role').value,
+                    subjects: document.getElementById('field-subjects').value,
+                    contact: document.getElementById('field-contact').value,
+                    notes: document.getElementById('field-notes').value,
+                    createdAt: new Date().toISOString()
+                };
+                if (id) {
+                    const idx = teachers.findIndex(t => t.id === id);
+                    if (idx !== -1) teachers[idx] = data;
+                } else {
+                    teachers.unshift(data);
+                }
+                renderTeachers();
+            } else if (currentTab === 'tasks') {
+                const data = {
+                    id: id || 'tk_' + Date.now(),
+                    title: document.getElementById('field-title').value,
+                    desc: document.getElementById('field-desc').value,
+                    dueDate: document.getElementById('field-dueDate').value,
+                    priority: document.getElementById('field-priority').value,
+                    status: id ? (tasks.find(t => t.id === id)?.status || 'todo') : 'todo',
+                    createdAt: new Date().toISOString()
+                };
+                if (id) {
+                    const idx = tasks.findIndex(t => t.id === id);
+                    if (idx !== -1) tasks[idx] = data;
+                } else {
+                    tasks.unshift(data);
+                }
+                renderTasks();
+            } else if (currentTab === 'journal') {
+                const data = {
+                    id: id || 'j_' + Date.now(),
+                    category: document.getElementById('field-category').value,
+                    title: document.getElementById('field-title').value,
+                    content: document.getElementById('field-content').value,
+                    createdAt: new Date().toISOString()
+                };
+                if (id) {
+                    const idx = journal.findIndex(j => j.id === id);
+                    if (idx !== -1) journal[idx] = data;
+                } else {
+                    journal.unshift(data);
+                }
+                renderJournal();
+            }
+
+            saveData();
+            closeModal();
+        }
+
+        // Helpers
+        function renderStars(num) {
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= num) stars += '<i class="fa-solid fa-star text-amber-400"></i>';
+                else stars += '<i class="fa-regular fa-star text-slate-300"></i>';
+            }
+            return `<div class="flex gap-0.5 text-xs">${stars}</div>`;
+        }
+
+        function getPriorityBadge(priority) {
+            if (priority === 'High') return '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-red-50 text-red-600 border border-red-100">สำคัญสูง</span>';
+            if (priority === 'Medium') return '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-600 border border-amber-100">ปานกลาง</span>';
+            return '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-600">ทั่วไป</span>';
+        }
+
+        function formatDate(dStr) {
+            if (!dStr) return '';
+            const d = new Date(dStr);
+            return d.toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
+```
